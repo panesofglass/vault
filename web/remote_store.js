@@ -55,7 +55,7 @@ RemoteStore = (function() {
         if (config.global) client.storeObject(ITEM_TYPE, 'global', config.global);
         if (config.services) {
           for (var key in config.services)
-            client.storeObject(ITEM_TYPE, 'services.' + key, config.services[key]);
+            client.storeObject(ITEM_TYPE, 'services/' + key, config.services[key]);
         }
         callback.call(context, null);
       }
