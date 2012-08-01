@@ -27,7 +27,8 @@ RemoteStore = (function() {
     
     var store = {
       clear: function(callback, context) {
-        var keys = client.getListing('');
+        client.remove('global');
+        var keys = client.getListing('services/');
         for (var i = 0, n = keys.length; i < n; i++) client.remove(keys[i]);
         callback.call(context, null);
       },
