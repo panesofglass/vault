@@ -20,9 +20,10 @@ RemoteStore = (function() {
   
   remoteStorage.defineModule('vault', function(client) {
     // Dummy saved data
+    window.rs = client;
     client.storeObject('password-gen-params', 'global', {length: 16});
-    client.storeObject('password-gen-params', 'services.google', {length: 20, symbol: 0, space: 0});
-    client.storeObject('password-gen-params', 'services.twitter', {length: 10, repeat: 2, upper: 3});
+    client.storeObject('password-gen-params', 'services/google', {length: 20, symbol: 0, space: 0});
+    client.storeObject('password-gen-params', 'services/twitter', {length: 10, repeat: 2, upper: 3});
     
     var store = {
       clear: function(callback, context) {
@@ -32,17 +33,20 @@ RemoteStore = (function() {
       },
       
       load: function(callback, context) {
-        var keys   = client.getListing(''),
-            config = {global: {}, services: {}},
-            key, object;
+        var config = {global: {}, services: {}},
+            global, keys, key, object;
         
+        if (global = client.getObject('global')) {
+          delete global['@type'];
+          config.global = global;
+        }
+        
+        keys = client.getListing('services/');
         for (var i = 0, n = keys.length; i < n; i++) {
           key    = keys[i];
-          object = client.getObject(key);
+          object = client.getObject('services/' + key);
           delete object['@type'];
-          
-          if (key === 'global') config.global = object;
-          if (/^services\./.test(key)) config.services[key.replace(/^services\./, '')] = object;
+          config.services[key] = object;
         }
         callback.call(context, null, config);
       },
